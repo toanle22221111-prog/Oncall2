@@ -6,683 +6,603 @@
 <title>PUST Copilot VNVC — Tự Động Hoàn Toàn</title>
 <style>
 :root {
-  --bg: #090d16;
-  --panel: #131b2e;
-  --line: #22304d;
-  --text: #f0f6fc;
-  --muted: #8b9bb4;
-  --xoa: #2ea043;
-  --chot: #388bfd;
-  --hoi: #d29922;
-  --red: #f85149;
-  --fs: 32px;
+--bg: #090d16;
+--panel: #131b2e;
+--line: #22304d;
+--text: #f0f6fc;
+--muted: #8b9bb4;
+--xoa: #2ea043;
+--chot: #388bfd;
+--hoi: #d29922;
+--red: #f85149;
+--fs: 30px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+​{ box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
-
-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
+​header {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 10px 14px;
+background: var(--panel);
+border-bottom: 1px solid var(--line);
+flex-wrap: wrap;
 }
 .dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--muted);
-  flex: none;
+width: 12px;
+height: 12px;
+border-radius: 50%;
+background: var(--muted);
+flex: none;
 }
 .dot.live {
-  background: #39d353;
-  box-shadow: 0 0 12px #39d353;
-  animation: pulse 1.5s infinite;
+background: #39d353;
+box-shadow: 0 0 12px #39d353;
+animation: pulse 1.4s infinite;
 }
 @keyframes pulse {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
+0% { transform: scale(0.92); opacity: 0.7; }
+50% { transform: scale(1.18); opacity: 1; }
+100% { transform: scale(0.92); opacity: 0.7; }
 }
-#status { font-size: 14px; font-weight: 700; color: #fff; }
-#meter {
-  width: 70px;
-  height: 8px;
-  border-radius: 4px;
-  background: #1c273e;
-  overflow: hidden;
-}
-#meter i {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: #39d353;
-  transition: width 0.08s;
-}
+#status { font-size: 13px; font-weight: 700; color: #fff; }
 #timer { font-size: 13px; color: var(--muted); margin-right: auto; font-variant-numeric: tabular-nums; }
-
-button {
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 7px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: #1c273e;
-  color: var(--text);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+​button {
+font: inherit;
+font-size: 13px;
+font-weight: 600;
+padding: 7px 11px;
+border-radius: 8px;
+border: 1px solid var(--line);
+background: #1c273e;
+color: var(--text);
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+gap: 5px;
 }
 button:hover { border-color: var(--muted); }
-button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+button.primary { background: #238636; border-color: #2ea043; color: #fff; font-size: 14px; }
 button.primary.on { background: #da3633; border-color: #f85149; }
 button.accent { background: #1f6feb; border-color: #388bfd; color: #fff; }
-
-main {
-  flex: 1;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-  overflow-y: auto;
+​main {
+flex: 1;
+padding: 16px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+gap: 12px;
+overflow-y: auto;
 }
 .line {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  background: var(--panel);
-  border-left: 10px solid var(--muted);
-  border-radius: 12px;
-  padding: 20px 24px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+display: flex;
+gap: 14px;
+align-items: flex-start;
+background: var(--panel);
+border-left: 10px solid var(--muted);
+border-radius: 12px;
+padding: 18px 20px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .line.XANH { border-color: #39d353; }
 .line.VANG { border-color: #e3b341; }
 .line.DO { border-color: #f85149; background: #2b1115; }
-
-.lvl {
-  font-size: 14px;
-  font-weight: 800;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 2px solid var(--muted);
-  color: var(--muted);
-  flex: none;
-  margin-top: calc(var(--fs) * 0.2);
+​.lvl {
+font-size: 13px;
+font-weight: 800;
+padding: 3px 10px;
+border-radius: 999px;
+border: 2px solid var(--muted);
+color: var(--muted);
+flex: none;
+margin-top: 6px;
 }
 .lvl.XANH { color: #39d353; border-color: #39d353; }
 .lvl.VANG { color: #e3b341; border-color: #e3b341; }
 .lvl.DO { color: #fff; background: #f85149; border-color: #f85149; }
-
-#fSay {
-  font-size: var(--fs);
-  font-weight: 600;
-  line-height: 1.45;
-  letter-spacing: -0.01em;
+​#fSay {
+font-size: var(--fs);
+font-weight: 600;
+line-height: 1.4;
+letter-spacing: -0.01em;
 }
-#liveHeard {
-  color: #79c0ff;
-  font-size: 15px;
-  font-weight: 500;
-  min-height: 1.4em;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+​#liveBox {
+background: rgba(28, 39, 62, 0.6);
+border: 1px dashed var(--line);
+border-radius: 10px;
+padding: 10px 14px;
+font-size: 15px;
+color: #79c0ff;
+display: flex;
+align-items: center;
+gap: 8px;
 }
-#liveHeard i { color: var(--muted); font-style: normal; }
-
-#errBox {
-  display: none;
-  background: #3d1214;
-  border: 1px solid var(--red);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
+#liveBox b { color: var(--muted); font-size: 13px; text-transform: uppercase; }
+​#errBox {
+display: none;
+background: #3d1214;
+border: 1px solid var(--red);
+border-radius: 8px;
+padding: 10px 14px;
+font-size: 14px;
 }
 #errBox.show { display: block; }
-
-footer {
-  background: var(--panel);
-  border-top: 1px solid var(--line);
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+​footer {
+background: var(--panel);
+border-top: 1px solid var(--line);
+padding: 10px 14px;
+display: flex;
+flex-direction: column;
+gap: 8px;
 }
 #transcript {
-  max-height: 18vh;
-  overflow-y: auto;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+max-height: 16vh;
+overflow-y: auto;
+font-size: 14px;
+line-height: 1.5;
+color: var(--muted);
+display: flex;
+flex-direction: column;
+gap: 4px;
 }
 #transcript div b { color: var(--text); }
 #transcript div.KH b { color: #e3b341; }
 #transcript div.BS b { color: #58a6ff; }
 #transcript div.AI b { color: #39d353; }
-
-dialog {
-  background: var(--panel);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  width: min(840px, 94vw);
-  max-height: 90vh;
-  margin: auto;
-  padding: 0;
+​dialog {
+background: var(--panel);
+color: var(--text);
+border: 1px solid var(--line);
+border-radius: 12px;
+width: min(840px, 94vw);
+max-height: 90vh;
+margin: auto;
+padding: 0;
 }
 dialog::backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); }
-dialog form { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+dialog form { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 dialog input, dialog select, dialog textarea {
-  background: #1c273e;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 8px 10px;
-  font: inherit;
-  color: #fff;
+background: #1c273e;
+border: 1px solid var(--line);
+border-radius: 8px;
+padding: 8px 10px;
+font: inherit;
+color: #fff;
 }
 dialog textarea { min-height: 80px; resize: vertical; }
-.title { font-size: 18px; font-weight: 800; }
+.title { font-size: 17px; font-weight: 800; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .row { display: flex; gap: 8px; align-items: center; }
-
-@media (max-width: 600px) {
-  :root { --fs: 26px; }
-  .line { flex-direction: column; gap: 8px; padding: 16px; }
-  .grid2 { grid-template-columns: 1fr; }
+​@media (max-width: 600px) {
+:root { --fs: 24px; }
+.line { flex-direction: column; gap: 6px; padding: 14px; }
+.grid2 { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-
-<header>
-  <span id="dot" class="dot"></span>
-  <span id="status">Chưa bật</span>
-  <span id="meter"><i></i></span>
-  <span id="timer">00:00</span>
-  
-  <button id="btnAuto" class="primary">▶ BẬT TỰ ĐỘNG (AUTO)</button>
-  <button id="btnCase">📋 Dán Case</button>
-  <button id="btnEnd">🏁 Kết Ca</button>
-  <button id="btnClear">Ca Mới</button>
-  <button id="btnSet">⚙</button>
+​<header>
+<span id="dot" class="dot"></span>
+<span id="status">Chưa bật</span>
+<span id="timer">00:00</span>
+​<button id="btnAuto" class="primary">▶ BẬT TỰ ĐỘNG (AUTO)</button>
+<button id="btnCase">📋 Dán Case</button>
+<button id="btnEnd">🏁 Kết Ca</button>
+<button id="btnClear">Ca Mới</button>
+<button id="btnSet">⚙</button>
 </header>
-
-<main>
-  <div class="line" id="line">
-    <span class="lvl" id="lvl">—</span>
-    <p id="fSay">Bác sĩ dán case hoặc bấm ▶ BẬT TỰ ĐỘNG để AI tự nghe và tự gợi ý từng câu theo thời gian thực.</p>
-  </div>
-  <div id="liveHeard"><i>Khách đang nói:</i> <span id="heardTxt">Đang chờ âm thanh...</span></div>
-  <div id="errBox"></div>
+​<main>
+<div class="line" id="line">
+<span class="lvl" id="lvl">—</span>
+<p id="fSay">Bác sĩ dán case hoặc bấm ▶ BẬT TỰ ĐỘNG để AI tự nghe và tự gợi ý từng câu theo thời gian thực.</p>
+</div>
+​<div id="liveBox">
+<b>Khách nói:</b>
+<span id="heardTxt">Đang chờ âm thanh...</span>
+</div>
+​<div id="errBox"></div>
 </main>
-
-<footer>
-  <div class="row">
-    <input id="khIn" placeholder="Có thể gõ nhanh nếu đang nghe điện thoại..." style="flex:1;background:#1c273e;border:1px solid var(--line);color:#fff;border-radius:8px;padding:8px 12px">
-    <button id="btnSend">Gửi</button>
-  </div>
-  <div id="transcript"></div>
+​<footer>
+<div class="row">
+<input id="khIn" placeholder="Hoặc gõ nhanh vài chữ nếu đang nghe điện thoại..." style="flex:1;background:#1c273e;border:1px solid var(--line);color:#fff;border-radius:8px;padding:8px 12px">
+<button id="btnSend" class="accent">Gửi AI</button>
+</div>
+<div id="transcript"></div>
 </footer>
-
-<!-- DIALOG DÁN CASE -->
+​<!-- DIALOG DÁN CASE -->
 <dialog id="caseDlg">
-  <form method="dialog">
-    <div class="title">📋 Dán Tin Nhắn Alert Teams</div>
-    <textarea id="kPaste" style="min-height:160px" placeholder="Dán toàn bộ tin nhắn oncall vào đây — AI tự bóc tách và phân tích kịch bản mở đầu..."></textarea>
-    <div id="kStatus" style="font-size:14px;color:var(--hoi)"></div>
-    <div class="row">
-      <button type="button" id="kClear">Xoá</button>
-      <span style="margin-left:auto"></span>
-      <button value="cancel">Đóng</button>
-      <button type="button" id="kAnalyze" class="primary">Phân Tích Ngay</button>
-    </div>
-  </form>
+<form method="dialog">
+<div class="title">📋 Dán Tin Nhắn Alert Teams</div>
+<textarea id="kPaste" style="min-height:160px" placeholder="Dán toàn bộ tin nhắn oncall vào đây — AI tự bóc tách và phân tích kịch bản mở đầu..."></textarea>
+<div id="kStatus" style="font-size:14px;color:var(--hoi)"></div>
+<div class="row">
+<button type="button" id="kClear">Xoá</button>
+<span style="margin-left:auto"></span>
+<button value="cancel">Đóng</button>
+<button type="button" id="kAnalyze" class="primary">Phân Tích Ngay</button>
+</div>
+</form>
 </dialog>
-
-<!-- DIALOG KẾT CA -->
+​<!-- DIALOG KẾT CA -->
 <dialog id="endDlg">
-  <form method="dialog">
-    <div class="title">🏁 Hoàn Tất Case — Báo Cáo Teams 1 Đoạn Văn</div>
-    <div id="eStatus" style="font-size:14px;color:var(--hoi)"></div>
-    <textarea id="eTeams" style="min-height:120px"></textarea>
-    <div class="row">
-      <button type="button" id="eCopy" class="accent">📋 Copy Tin Nhắn</button>
-      <span style="margin-left:auto"></span>
-      <button type="button" id="eNew" class="primary">Ca Mới</button>
-      <button value="close">Đóng</button>
-    </div>
-  </form>
+<form method="dialog">
+<div class="title">🏁 Hoàn Tất Case — Báo Cáo Teams 1 Đoạn Văn</div>
+<div id="eStatus" style="font-size:14px;color:var(--hoi)"></div>
+<textarea id="eTeams" style="min-height:120px"></textarea>
+<div class="row">
+<button type="button" id="eCopy" class="accent">📋 Copy Tin Nhắn</button>
+<span style="margin-left:auto"></span>
+<button type="button" id="eNew" class="primary">Ca Mới</button>
+<button value="close">Đóng</button>
+</div>
+</form>
 </dialog>
-
-<!-- DIALOG CÀI ĐẶT -->
+​<!-- DIALOG CÀI ĐẶT -->
 <dialog id="setDlg">
-  <form method="dialog">
-    <div class="title">⚙ Cài Đặt Cấu Hình Tự Động</div>
-    <div class="grid2">
-      <label>Nhà cung cấp
-        <select id="sProvider">
-          <option value="groq">Groq (Miễn phí 100%, LPU siêu tốc)</option>
-          <option value="gemini">Google Gemini</option>
-        </select>
-      </label>
-      <label>API Key
-        <input id="sKey" type="password" placeholder="Dán API Key vào đây">
-      </label>
-    </div>
-    <div class="grid2">
-      <label>Tên Bác Sĩ<input id="sName" value="Bác sĩ"></label>
-      <label>Độ nhạy ngắt câu (mili-giây)
-        <select id="sSilence">
-          <option value="600">600ms (Cực nhanh)</option>
-          <option value="800" selected>800ms (Chuẩn)</option>
-          <option value="1200">1200ms (Khách nói chậm)</option>
-        </select>
-      </label>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <span style="margin-left:auto"></span>
-      <button value="cancel">Huỷ</button>
-      <button value="save" class="primary">Lưu Cấu Hình</button>
-    </div>
-  </form>
+<form method="dialog">
+<div class="title">⚙ Cài Đặt Cấu Hình AI</div>
+<div class="grid2">
+<label>Nhà cung cấp
+<select id="sProvider">
+<option value="groq">Groq (Miễn phí 100%, LPU siêu tốc)</option>
+</select>
+</label>
+<label>API Key (gsk_...)
+<input id="sKey" type="password" placeholder="Dán Groq API Key vào đây">
+</label>
+</div>
+<div class="grid2">
+<label>Tên Bác Sĩ<input id="sName" value="Bác sĩ"></label>
+<label>Model Groq
+<select id="sModel">
+<option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile (Khuyên dùng)</option>
+<option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Siêu tốc)</option>
+</select>
+</label>
+</div>
+<div class="row" style="margin-top:10px">
+<span style="margin-left:auto"></span>
+<button value="cancel">Huỷ</button>
+<button value="save" class="primary">Lưu Cấu Hình</button>
+</div>
+</form>
 </dialog>
-
-<script>
+​<script>
 /* =====================================================================
-   CORE ENGINE: AUTONOMOUS CONTINUOUS AUDIO + LIVE REAL-TIME PROMPTER
-   ===================================================================== */
+CORE ENGINE: STREAMING PROMPTER + HYBRID LIVE RECOGNITION
+===================================================================== */
 const DEFAULT_PROMPT = `Bạn là TRỢ LÝ NHẮC THOẠI LÂM SÀNG cho BÁC SĨ trực Oncall PUST / Tổng đài tại hệ thống tiêm chủng VNVC. Bạn KHÔNG nói chuyện trực tiếp với khách; mỗi lượt bạn đưa ra MỘT câu tối ưu nhất (≤35 từ) để bác sĩ đọc ngay. Bác sĩ chịu trách nhiệm chuyên môn cuối cùng.
-
-QUY TẮC SOP VNVC BẮT BUỘC:
-1. Thuốc: Chỉ hướng dẫn Paracetamol khi sốt ≥38,5°C hoặc đau nhiều (trẻ: 10–15 mg/kg/lần; người lớn: 500 mg/lần, cách 4–6 giờ). Tuyệt đối không kê thuốc khác qua điện thoại.
-2. Bệnh trùng lặp (TCM, viêm hô hấp, tiêu hóa): Vắc xin bất hoạt không chứa virus sống nên không thể gây nhiễm bệnh. Giải thích là trùng lặp thời gian ủ bệnh tự nhiên trong cộng đồng.
-3. Khoảng cách tối thiểu: Chỉ được tiêm sớm tối đa ≤2 ngày (sớm ≥3 ngày: CHƯA ĐỦ ĐIỀU KIỆN TIÊM). Vắc xin sống dạng tiêm khác ngày cách ≥28 ngày. Qdenga không tiêm cùng ngày với vắc xin sống khác.
-4. Tiền sử mắc bệnh tự nhiên (sởi, thủy đậu) không tự quy đổi thành liều vắc xin.
-
-PHÂN TẦNG (MUC):
-- DO: Cấp cứu ngay (khó thở, tím tái, thở rít, co giật, li bì, mề đay choáng, nôn liên tục mọi thứ, giật mình chới với nghi TCM độ 2+).
-- VANG: Mời khám trực tiếp trong ngày (trẻ <3 tháng sốt ≥38°C; sốt >48h; mụn nước loét miệng; sưng đỏ lan rộng cả chi có mủ).
-- XANH: Theo dõi tại nhà (phản ứng tại chỗ thông thường, sốt nhẹ-vừa <48h sau tiêm bất hoạt, sốt/phát ban sau 5-12 ngày tiêm Priorix/MMR).
-
-ĐỊNH DẠNG BẮT BUỘC (đúng 2 dòng, không markdown):
+​QUY TẮC SOP VNVC BẮT BUỘC:
+​Thuốc: Chỉ hướng dẫn Paracetamol khi sốt ≥38,5°C hoặc đau nhiều (trẻ: 10–15 mg/kg/lần; người lớn: 500 mg/lần, cách 4–6 giờ). Tuyệt đối không kê thuốc khác qua điện thoại.
+​Bệnh trùng lặp (TCM, viêm hô hấp, tiêu hóa): Vắc xin bất hoạt không chứa virus sống nên không thể gây nhiễm bệnh. Giải thích là trùng lặp thời gian ủ bệnh tự nhiên trong cộng đồng.
+​Khoảng cách tối thiểu: Chỉ được tiêm sớm tối đa ≤2 ngày (sớm ≥3 ngày: CHƯA ĐỦ ĐIỀU KIỆN TIÊM). Vắc xin sống dạng tiêm khác ngày cách ≥28 ngày. Qdenga không tiêm cùng ngày với vắc xin sống khác.
+​Tiền sử mắc bệnh tự nhiên (sởi, thủy đậu) không tự quy đổi thành liều vắc xin.
+​PHÂN TẦNG (MUC):
+​DO: Cấp cứu ngay (khó thở, tím tái, thở rít, co giật, li bì, mề đay choáng, nôn liên tục mọi thứ, giật mình chới với nghi TCM độ 2+).
+​VANG: Mời khám trực tiếp trong ngày (trẻ <3 tháng sốt ≥38°C; sốt >48h; mụn nước loét miệng; sưng đỏ lan rộng cả chi có mủ).
+​XANH: Theo dõi tại nhà (phản ứng tại chỗ thông thường, sốt nhẹ-vừa <48h sau tiêm bất hoạt, sốt/phát ban sau 5-12 ngày tiêm Priorix/MMR).
+​ĐỊNH DẠNG BẮT BUỘC (đúng 2 dòng, không markdown):
 MUC: XANH | VANG | DO
 NOI: [MỘT câu duy nhất, ≤35 từ, không xuống dòng để bác sĩ đọc ngay]`;
-
-const CLOSE_PROMPT = `Dựa trên KHUNG CA và HỘI THOẠI thực tế, soạn tin nhắn đóng case Teams theo quy chuẩn VNVC:
-- Đúng 01 đoạn văn duy nhất, không xuống dòng.
-- Cấu trúc: Bác sĩ đã liên hệ KH/mẹ bé: [Tên bé/KH] ([Tuổi]). Hiện tại [mô tả ngắn tình trạng]. Đã giải thích [cơ chế lành tính / trùng lặp / khoảng cách]. Hướng dẫn [chăm sóc theo dõi tại nhà, dùng Paracetamol nếu sốt đau]; dặn dò kỹ các dấu hiệu cảnh báo [co giật, khó thở, sốt cao không hạ, nôn liên tục...] cần đến CSYT ngay. Khách hàng đã hiểu và an tâm. [PUST: Xin phép đóng case. | TỔNG ĐÀI: Nhờ TĐ hỗ trợ đóng case giúp ạ.]`;
-
-const $ = id => document.getElementById(id);
+​const CLOSE_PROMPT = `Dựa trên KHUNG CA và HỘI THOẠI thực tế, soạn tin nhắn đóng case Teams theo quy chuẩn VNVC:
+​Đúng 01 đoạn văn duy nhất, không xuống dòng.
+​Cấu trúc: Bác sĩ đã liên hệ KH/mẹ bé: [Tên bé/KH] ([Tuổi]). Hiện tại [mô tả ngắn tình trạng]. Đã giải thích [cơ chế lành tính / trùng lặp / khoảng cách]. Hướng dẫn [chăm sóc theo dõi tại nhà, dùng Paracetamol nếu sốt đau]; dặn dò kỹ các dấu hiệu cảnh báo [co giật, khó thở, sốt cao không hạ, nôn liên tục...] cần đến CSYT ngay. Khách hàng đã hiểu và an tâm. [PUST: Xin phép đóng case. | TỔNG ĐÀI: Nhờ TĐ hỗ trợ đóng case giúp ạ.]`;
+​const $ = id => document.getElementById(id);
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem('auto_pust_'+k); return v === null ? d : v; }catch(_){ return d; } },
-  set(k, v){ try{ localStorage.setItem('auto_pust_'+k, v); }catch(_){} }
+get(k, d){ try{ const v = localStorage.getItem('pust_auto_'+k); return v === null ? d : v; }catch(){ return d; } },
+set(k, v){ try{ localStorage.setItem('pust_auto'+k, v); }catch(_){} }
 };
-
-let cfg = {
-  provider: store.get('provider', 'groq'),
-  key: store.get('key', ''),
-  name: store.get('name', 'Bác sĩ'),
-  silence: +store.get('silence', 800)
+​let cfg = {
+provider: store.get('provider', 'groq'),
+key: store.get('key', ''),
+name: store.get('name', 'Bác sĩ'),
+model: store.get('model', 'llama-3.3-70b-versatile')
 };
-
-const GROQ_URL = 'https://api.groq.com/openai/v1';
-const GEM_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
+​const GROQ_URL = 'https://api.groq.com/openai/v1';
 let frame = JSON.parse(store.get('frame', '{}') || '{}');
 let turns = [];
 let isAuto = false;
-let audioCtx = null, mediaStream = null, scriptProc = null;
-let speechChunks = [], isSpeaking = false, silenceTimer = null;
 let callStartTime = null, callTimerInterval = null;
 let abortCtrl = null;
-
-function setStatus(text, live){
-  $('status').textContent = text;
-  $('dot').className = 'dot' + (live ? ' live' : '');
+let recognition = null;
+let debounceSuggestTimer = null;
+let lastSpokenText = '';
+​function setStatus(text, live){
+$('status').textContent = text;
+$('dot').className = 'dot' + (live ? ' live' : '');
 }
 function showErr(msg){
-  $('errBox').textContent = msg ? '⚠ ' + msg : '';
-  $('errBox').classList.toggle('show', !!msg);
+$('errBox').textContent = msg ? '⚠ ' + msg : '';
+$('errBox').classList.toggle('show', !!msg);
 }
-
-function renderSay(lv, say){
-  if(lv) {
-    $('line').className = 'line ' + lv;
-    $('lvl').className = 'lvl ' + lv;
-    $('lvl').textContent = lv;
-  }
-  if(say) $('fSay').textContent = say;
+​function renderSay(lv, say){
+if(lv) {
+$('line').className = 'line ' + lv;
+$('lvl').className = 'lvl ' + lv;
+$('lvl').textContent = lv;
 }
-
-function addTranscript(who, text){
-  turns.push({ who, text, t: Date.now() });
-  const box = $('transcript');
-  const d = document.createElement('div');
-  d.className = who;
-  d.innerHTML = `<b>${who}:</b> ${text}`;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
+if(say) $('fSay').textContent = say;
 }
-
-/* =====================================================================
-   WHISPER REAL-TIME TRANSCRIBE
-   ===================================================================== */
-function encodeWAV(samples, sampleRate) {
-  const buffer = new ArrayBuffer(44 + samples.length * 2);
-  const view = new DataView(buffer);
-  const writeString = (offset, str) => {
-    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-  };
-  writeString(0, 'RIFF');
-  view.setUint32(4, 36 + samples.length * 2, true);
-  writeString(8, 'WAVE');
-  writeString(12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true); // PCM
-  view.setUint16(22, 1, true); // Mono
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  writeString(36, 'data');
-  view.setUint32(40, samples.length * 2, true);
-  let offset = 44;
-  for (let i = 0; i < samples.length; i++, offset += 2) {
-    const s = Math.max(-1, Math.min(1, samples[i]));
-    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-  }
-  return new Blob([buffer], { type: 'audio/wav' });
+​function addTranscript(who, text){
+turns.push({ who, text, t: Date.now() });
+const box = $('transcript');
+const d = document.createElement('div');
+d.className = who;
+d.innerHTML = <b>${who}:</b> ${text};
+box.appendChild(d);
+box.scrollTop = box.scrollHeight;
 }
-
-async function transcribeWhisper(wavBlob){
-  const fd = new FormData();
-  fd.append('file', wavBlob, 'audio.wav');
-  fd.append('model', 'whisper-large-v3-turbo');
-  fd.append('language', 'vi');
-  fd.append('response_format', 'text');
-  fd.append('prompt', 'Tư vấn tiêm chủng VNVC. Vắc xin Hexaxim, Infanrix, Prevenar, Qdenga, sốt, phát ban, sưng, quấy khóc, co giật.');
-  const res = await fetch(GROQ_URL + '/audio/transcriptions', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + cfg.key },
-    body: fd
-  });
-  if(!res.ok) throw new Error('Whisper: ' + (await res.text()).slice(0, 200));
-  return (await res.text()).trim();
+​/* =====================================================================
+STREAMING LLM SUGGESTION (REAL-TIME GROQ)
+===================================================================== */
+async function streamSuggest(customTriggerText){
+if(!cfg.key) {
+showErr('Chưa có Groq API key! Bấm ⚙ để dán key.');
+return;
 }
-
-/* =====================================================================
-   STREAMING LLM SUGGESTION (REAL-TIME)
-   ===================================================================== */
-async function streamSuggest(){
-  if(abortCtrl) abortCtrl.abort();
-  abortCtrl = new AbortController();
-
-  let context = '';
-  if(frame.raw) context += 'THÔNG TIN CASE: ' + frame.raw + '\n';
-  const recent = turns.slice(-6).map(t => `${t.who}: ${t.text}`).join('\n');
-  context += 'HỘI THOẠI GẦN NHẤT:\n' + (recent || '(Bắt đầu cuộc gọi)') + '\n';
-  context += 'Đưa ra MỘT câu duy nhất cho Bác sĩ đọc tiếp theo.';
-
-  try {
-    const res = await fetch(GROQ_URL + '/chat/completions', {
-      method: 'POST',
-      signal: abortCtrl.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + cfg.key
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: DEFAULT_PROMPT },
-          { role: 'user', content: context }
-        ],
-        temperature: 0.2,
-        max_tokens: 250,
-        stream: true
-      })
-    });
-
-    const reader = res.body.getReader();
-    const dec = new TextDecoder();
-    let acc = '';
-
-    while(true){
-      const { value, done } = await reader.read();
-      if(done) break;
-      const lines = dec.decode(value, { stream: true }).split('\n');
-      for(const line of lines){
-        const l = line.trim();
-        if(!l.startsWith('data:')) continue;
-        const d = l.slice(5).trim();
-        if(!d || d === '[DONE]') continue;
-        try {
-          const j = JSON.parse(d);
-          const t = j.choices?.[0]?.delta?.content;
-          if(t) {
-            acc += t;
-            const m = acc.match(/MUC:\s*(XANH|VANG|DO)/i);
-            const n = acc.match(/NOI:\s*(.*)/i);
-            if(m) renderSay(m[1].toUpperCase(), null);
-            if(n) renderSay(null, n[1].replace(/[\r\n]+/g, ' ').trim());
-            else if(!acc.includes('MUC:')) renderSay(null, acc.replace(/[\r\n]+/g, ' ').trim());
-          }
-        } catch(_) {}
-      }
-    }
-  } catch(e) {
-    if(e.name !== 'AbortError') showErr('Lỗi gợi ý: ' + e.message);
-  }
-}
-
-/* =====================================================================
-   AUTONOMOUS AUDIO PIPELINE (CONTINUOUS LISTENING)
-   ===================================================================== */
-async function startAutoEngine(){
-  if(!cfg.key) { $('setDlg').showModal(); return; }
-  try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-    });
-    const AC = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AC();
-    const src = audioCtx.createMediaStreamSource(mediaStream);
-    scriptProc = audioCtx.createScriptProcessor(2048, 1, 1);
-    
-    src.connect(scriptProc);
-    scriptProc.connect(audioCtx.destination);
-
-    isAuto = true;
-    setStatus('ĐANG TỰ ĐỘNG LẮNG NGHE & NHẮC THOẠI', true);
-    $('btnAuto').textContent = '■ DỪNG TỰ ĐỘNG';
-    $('btnAuto').classList.add('on');
-    callStartTime = Date.now();
-    callTimerInterval = setInterval(() => {
-      const s = Math.floor((Date.now() - callStartTime)/1000);
-      $('timer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
-    }, 1000);
-
-    scriptProc.onaudioprocess = async e => {
-      const input = e.inputBuffer.getChannelData(0);
-      let sum = 0;
-      for(let i=0; i<input.length; i++) sum += input[i]*input[i];
-      const rms = Math.sqrt(sum/input.length);
-      $('meter').firstChild.style.width = Math.min(100, rms * 400) + '%';
-
-      // Voice Activity Detection threshold
-      if(rms > 0.02) {
-        speechChunks.push(new Float32Array(input));
-        if(!isSpeaking){
-          isSpeaking = true;
-          $('heardTxt').textContent = 'Đang nghe tiếng nói...';
-        }
-        clearTimeout(silenceTimer);
-      } else if(isSpeaking) {
-        // Silence detected -> wait for timeout to process utterance
-        clearTimeout(silenceTimer);
-        silenceTimer = setTimeout(async () => {
-          isSpeaking = false;
-          if(speechChunks.length > 5){ // At least ~250ms of audio
-            const totalLen = speechChunks.reduce((acc, cur) => acc + cur.length, 0);
-            const flatSamples = new Float32Array(totalLen);
-            let offset = 0;
-            for(const c of speechChunks){ flatSamples.set(c, offset); offset += c.length; }
-            speechChunks = [];
-
-            const wav = encodeWAV(flatSamples, audioCtx.sampleRate);
-            try {
-              $('heardTxt').textContent = 'Whisper đang dịch...';
-              const heard = await transcribeWhisper(wav);
-              if(heard && heard.length > 1){
-                $('heardTxt').textContent = `"${heard}"`;
-                addTranscript('KH', heard);
-                streamSuggest(); // Auto-trigger real-time suggestion
-              } else {
-                $('heardTxt').textContent = '(Tạp âm)';
-              }
-            } catch(err) {
-              showErr('Lỗi chuyển giọng nói: ' + err.message);
-            }
-          } else {
-            speechChunks = [];
-          }
-        }, cfg.silence);
-      }
-    };
-  } catch(e) {
-    showErr('Không thể bật micro tự động: ' + e.message + ' (Hãy đảm bảo mở qua HTTPS)');
-  }
-}
-
-function stopAutoEngine(){
-  isAuto = false;
-  if(scriptProc) { scriptProc.disconnect(); scriptProc.onaudioprocess = null; }
-  if(audioCtx) audioCtx.close();
-  if(mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-  clearInterval(callTimerInterval);
-  setStatus('Đã dừng', false);
-  $('btnAuto').textContent = '▶ BẬT TỰ ĐỘNG (AUTO)';
-  $('btnAuto').classList.remove('on');$('meter').firstChild.style.width = '0%';
-}
-
-$('btnAuto').onclick = () => {
-  if(isAuto) stopAutoEngine();
-  else startAutoEngine();
-};
-
-/* =====================================================================
-   UI ACTIONS & CONTROLS
-   ===================================================================== */
-$('btnCase').onclick = () => $('caseDlg').showModal();$('kClear').onclick = () => { $('kPaste').value = ''; };$('kAnalyze').onclick = async () => {
-  const raw = $('kPaste').value.trim();
-  if(!raw) return;
-  $('kStatus').textContent = 'AI đang quét case...';
-  frame.raw = raw;
-  store.set('frame', JSON.stringify(frame));
-  
-  try {
-    const res = await fetch(GROQ_URL + '/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: DEFAULT_PROMPT },
-          { role: 'user', content: 'PHÂN TÍCH CASE ONCALL TEAMS:\n' + raw + '\nĐưa ra câu chào mở đầu tốt nhất.' }
-        ]
-      })
-    });
-    const j = await res.json();
-    const reply = j.choices?.[0]?.message?.content || '';
-    const m = reply.match(/MUC:\s*(XANH|VANG|DO)/i);
-    const n = reply.match(/NOI:\s*(.*)/i);
-    renderSay(m ? m[1] : 'XANH', n ? n[1] : reply);
-    $('kStatus').textContent = '✓ Chuẩn bị xong!';
-    setTimeout(() => $('caseDlg').close(), 800); } catch(e) {$('kStatus').textContent = 'Lỗi: ' + e.message;
-  }
-};
-
-$('btnSend').onclick = () => {
-  const t = $('khIn').value.trim();
-  if(!t) return;
-  $('khIn').value = '';
-  addTranscript('KH', t);
-  streamSuggest();
-};
-$('khIn').onkeydown = e => { if(e.key === 'Enter')$('btnSend').click(); };
-
-$('btnEnd').onclick = async () => {
-  if(isAuto) stopAutoEngine();
-  $('eTeams').value = '';
-  $('endDlg').showModal();$('eStatus').textContent = 'AI đang tự động soạn báo cáo Teams 1 đoạn văn...';
-
-  const history = turns.map(t => `${t.who}: ${t.text}`).join('\n');
-  try {
-    const res = await fetch(GROQ_URL + '/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: CLOSE_PROMPT },
-          { role: 'user', content: `CASE: ${frame.raw || ''}\nHỘI THOẠI:\n${history}` }
-        ]
-      })
-    });
-    const j = await res.json();
-    const msg = (j.choices?.[0]?.message?.content || '').replace(/[\r\n]+/g, ' ').trim();
-    $('eTeams').value = msg;
-    $('eStatus').textContent = '✓ Đã xong (Đã tự động Copy)';
-    try { await navigator.clipboard.writeText(msg); } catch(_) {}
-  } catch(e) {
-    $('eStatus').textContent = 'Lỗi: ' + e.message;
-  }
-};
-
-$('eCopy').onclick = async () => {
-  await navigator.clipboard.writeText($('eTeams').value);$('eCopy').textContent = '✓ Đã Copy!';
-  setTimeout(() => $('eCopy').textContent = '📋 Copy Tin Nhắn', 1200);
-};
-
-$('btnClear').onclick = () => {
-  if(confirm('Làm mới toàn bộ ca trực?')){
-    turns = [];
-    frame = {};
-    store.set('frame', '{}');
-    $('transcript').innerHTML = '';
-    renderSay('XANH', 'Bác sĩ dán case hoặc bấm ▶ BẬT TỰ ĐỘNG để AI tự nghe và tự gợi ý từng câu theo thời gian thực.');
-    $('heardTxt').textContent = 'Đang chờ âm thanh...';
-  }
-};
-
-$('btnSet').onclick = () => {$('sProvider').value = cfg.provider;
-  $('sKey').value = cfg.key;
-  $('sName').value = cfg.name;
-  $('sSilence').value = cfg.silence;
-  $('setDlg').showModal();
-};
-
-$('setDlg').addEventListener('close', () => {
-  if($('setDlg').returnValue === 'save'){
-    cfg.provider = $('sProvider').value;
-    cfg.key = $('sKey').value.trim();
-    cfg.name = $('sName').value.trim();
-    cfg.silence = +$('sSilence').value;
-    ['provider','key','name','silence'].forEach(k => store.set(k, cfg[k]));
-    setStatus('Đã lưu cấu hình', false);
-  }
+if(abortCtrl) abortCtrl.abort();
+abortCtrl = new AbortController();
+​let context = '';
+if(frame.raw) context += 'THÔNG TIN CASE ĐÃ DÁN:\n' + frame.raw + '\n\n';
+const recent = turns.slice(-6).map(t => ${t.who}: ${t.text}).join('\n');
+context += 'HỘI THOẠI:\n' + (recent || '(Bắt đầu cuộc gọi)') + '\n';
+if(customTriggerText) context += '\nKhách vừa nói thêm: ' + customTriggerText;
+context += '\nHãy đưa ra MỘT câu duy nhất (≤35 từ) tiếp theo cho Bác sĩ đọc ngay.';
+​try {
+showErr('');
+setStatus('AI đang gợi ý...', true);
+const res = await fetch(GROQ_URL + '/chat/completions', {
+method: 'POST',
+signal: abortCtrl.signal,
+headers: {
+'Content-Type': 'application/json',
+'Authorization': 'Bearer ' + cfg.key
+},
+body: JSON.stringify({
+model: cfg.model,
+messages: [
+{ role: 'system', content: DEFAULT_PROMPT },
+{ role: 'user', content: context }
+],
+temperature: 0.2,
+max_tokens: 220,
+stream: true
+})
 });
-
-if(!cfg.key) setStatus('Bấm ⚙ để nhập API Key', false);
+​if(!res.ok) {
+const errTxt = await res.text();
+throw new Error(Groq ${res.status}: ${errTxt.slice(0, 160)});
+}
+​const reader = res.body.getReader();
+const dec = new TextDecoder();
+let acc = '';
+​while(true){
+const { value, done } = await reader.read();
+if(done) break;
+const chunk = dec.decode(value, { stream: true });
+const lines = chunk.split('\n');
+for(const line of lines){
+const l = line.trim();
+if(!l.startsWith('data:')) continue;
+const d = l.slice(5).trim();
+if(!d || d === '[DONE]') continue;
+try {
+const j = JSON.parse(d);
+const t = j.choices?.[0]?.delta?.content;
+if(t) {
+acc += t;
+const m = acc.match(/MUC:\s*(XANH|VANG|DO)/i);
+const n = acc.match(/NOI:\s*(.*)/i);
+if(m) renderSay(m[1].toUpperCase(), null);
+if(n) renderSay(null, n[1].replace(/[\r\n]+/g, ' ').trim());
+else if(!acc.includes('MUC:')) renderSay(null, acc.replace(/[\r\n]+/g, ' ').trim());
+}
+} catch(_) {}
+}
+}
+setStatus('Đang tự động lắng nghe...', true);
+} catch(e) {
+if(e.name !== 'AbortError') {
+showErr('Lỗi gợi ý: ' + e.message);
+setStatus('Lỗi kết nối AI', false);
+}
+}
+}
+​/* =====================================================================
+NATIVE CONTINUOUS SPEECH RECOGNITION (CHROME ANDROID OPTIMIZED)
+===================================================================== */
+function initContinuousSpeech(){
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(!SpeechRec) {
+showErr('Trình duyệt không hỗ trợ nhận dạng giọng nói. Hãy dùng Google Chrome.');
+return null;
+}
+​const rec = new SpeechRec();
+rec.lang = 'vi-VN';
+rec.continuous = true;
+rec.interimResults = true;
+rec.maxAlternatives = 1;
+​rec.onstart = () => {
+setStatus('Đang nghe thời gian thực...', true);
+$('heardTxt').textContent = 'Đang nghe tiếng nói...';
+};
+​rec.onresult = e => {
+let interim = '';
+let final = '';
+​for(let i = e.resultIndex; i < e.results.length; i++){
+const text = e.results[i][0].transcript;
+if(e.results[i].isFinal) {
+final += text;
+} else {
+interim += text;
+}
+}
+​const currentText = (final || interim).trim();
+if(currentText) {
+$('heardTxt').textContent = "${currentText}";
+lastSpokenText = currentText;
+​// Dứt câu ngắn (debounce 650ms) -> lập tức kích hoạt streamSuggest
+clearTimeout(debounceSuggestTimer);
+debounceSuggestTimer = setTimeout(() => {
+if(lastSpokenText && lastSpokenText.length > 2) {
+addTranscript('KH', lastSpokenText);
+streamSuggest(lastSpokenText);
+lastSpokenText = '';
+}
+}, 700);
+}
+};
+​rec.onerror = e => {
+if(e.error === 'no-speech') return;
+if(e.error === 'not-allowed') {
+showErr('Micro bị chặn quyền. Hãy bấm vào biểu tượng ổ khoá trên thanh URL để Cho phép Micro.');
+stopAutoEngine();
+} else {
+console.warn('Speech error:', e.error);
+}
+};
+​rec.onend = () => {
+// Tự động hồi sinh nhận dạng liên tục nếu đang ở chế độ Auto
+if(isAuto) {
+try { rec.start(); } catch(_) {}
+}
+};
+​return rec;
+}
+​function startAutoEngine(){
+if(!cfg.key) {
+$('setDlg').showModal();
+return;
+}
+​if(!recognition) {
+recognition = initContinuousSpeech();
+}
+​if(!recognition) return;
+​try {
+recognition.start();
+isAuto = true;
+setStatus('ĐANG TỰ ĐỘNG LẮNG NGHE & NHẮC THOẠI', true);
+$('btnAuto').textContent = '■ DỪNG TỰ ĐỘNG';
+$('btnAuto').classList.add('on');
+showErr('');
+​callStartTime = Date.now();
+callTimerInterval = setInterval(() => {
+const s = Math.floor((Date.now() - callStartTime)/1000);
+$('timer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}, 1000);
+} catch(e) {
+showErr('Không thể khởi động micro: ' + e.message);
+}
+}
+​function stopAutoEngine(){
+isAuto = false;
+if(recognition) {
+try { recognition.stop(); } catch(_) {}
+}
+clearInterval(callTimerInterval);
+clearTimeout(debounceSuggestTimer);
+setStatus('Đã dừng', false);
+$('btnAuto').textContent = '▶ BẬT TỰ ĐỘNG (AUTO)';
+('btnAuto').classList.remove('on');('heardTxt').textContent = 'Đang chờ âm thanh...';
+}
+​$('btnAuto').onclick = () => {
+if(isAuto) stopAutoEngine();
+else startAutoEngine();
+};
+​/* =====================================================================
+MANUAL CONTROLS & DIALOGS
+===================================================================== */
+$('btnSend').onclick = () => {
+const t = $('khIn').value.trim();
+if(!t) return;
+('khIn').value = '';('heardTxt').textContent = "${t}";
+addTranscript('KH', t);
+streamSuggest(t);
+};
+('khIn').onkeydown = e => { if(e.key === 'Enter')('btnSend').click(); };
+​$('btnCase').onclick = () => ('caseDlg').showModal();('kClear').onclick = () => { ('kPaste').value = ''; };('kAnalyze').onclick = async () => {
+const raw = $('kPaste').value.trim();
+if(!raw) return;
+if(!cfg.key) { $('caseDlg').close(); ('setDlg').showModal(); return; }('kStatus').textContent = 'AI đang quét case và chuẩn bị câu mở đầu...';
+frame.raw = raw;
+store.set('frame', JSON.stringify(frame));
+​try {
+const res = await fetch(GROQ_URL + '/chat/completions', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+body: JSON.stringify({
+model: cfg.model,
+messages: [
+{ role: 'system', content: DEFAULT_PROMPT },
+{ role: 'user', content: 'PHÂN TÍCH CASE ONCALL TEAMS:\n' + raw + '\nĐưa ra câu chào mở đầu tốt nhất.' }
+]
+})
+});
+const j = await res.json();
+const reply = j.choices?.[0]?.message?.content || '';
+const m = reply.match(/MUC:\s*(XANH|VANG|DO)/i);
+const n = reply.match(/NOI:\s*(.*)/i);
+renderSay(m ? m[1] : 'XANH', n ? n[1] : reply);
+$('kStatus').textContent = '✓ Chuẩn bị xong!';
+setTimeout(() => ('caseDlg').close(), 800); } catch(e) {('kStatus').textContent = 'Lỗi: ' + e.message;
+}
+};
+​$('btnEnd').onclick = async () => {
+if(isAuto) stopAutoEngine();
+$('eTeams').value = '';
+('endDlg').showModal();('eStatus').textContent = 'AI đang tự động soạn báo cáo Teams 1 đoạn văn...';
+​const history = turns.map(t => ${t.who}: ${t.text}).join('\n');
+try {
+const res = await fetch(GROQ_URL + '/chat/completions', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+body: JSON.stringify({
+model: cfg.model,
+messages: [
+{ role: 'system', content: CLOSE_PROMPT },
+{ role: 'user', content: CASE: ${frame.raw || ''}\nHỘI THOẠI:\n${history} }
+]
+})
+});
+const j = await res.json();
+const msg = (j.choices?.[0]?.message?.content || '').replace(/[\r\n]+/g, ' ').trim();
+$('eTeams').value = msg;
+$('eStatus').textContent = '✓ Đã xong (Đã tự động Copy)';
+try { await navigator.clipboard.writeText(msg); } catch(_) {}
+} catch(e) {
+$('eStatus').textContent = 'Lỗi: ' + e.message;
+}
+};
+​('eCopy').onclick = async () => {
+await navigator.clipboard.writeText(('eTeams').value);$('eCopy').textContent = '✓ Đã Copy!';
+setTimeout(() => $('eCopy').textContent = '📋 Copy Tin Nhắn', 1200);
+};
+​$('btnClear').onclick = () => {
+if(confirm('Làm mới toàn bộ ca trực?')){
+turns = [];
+frame = {};
+store.set('frame', '{}');
+$('transcript').innerHTML = '';
+renderSay('XANH', 'Bác sĩ dán case hoặc bấm ▶ BẬT TỰ ĐỘNG để AI tự nghe và tự gợi ý từng câu theo thời gian thực.');
+$('heardTxt').textContent = 'Đang chờ âm thanh...';
+$('timer').textContent = '00:00';
+}
+};
+​('btnSet').onclick = () => {('sKey').value = cfg.key;
+$('sName').value = cfg.name;
+$('sModel').value = cfg.model;
+$('setDlg').showModal();
+};
+​('setDlg').addEventListener('close', () => {
+if(('setDlg').returnValue === 'save'){
+cfg.key = $('sKey').value.trim();
+cfg.name = $('sName').value.trim();
+cfg.model = $('sModel').value;
+['key','name','model'].forEach(k => store.set(k, cfg[k]));
+setStatus('Đã lưu cấu hình', false);
+}
+});
+​if(!cfg.key) setStatus('Bấm ⚙ để nhập API Key', false);
 </script>
 </body>
 </html>
