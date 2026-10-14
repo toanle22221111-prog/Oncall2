@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PUST Copilot VNVC — Groq Real-Time Pro</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --line: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --xoa: #3fb950;
+  --chot: #58a6ff;
+  --hoi: #d29922;
+  --red: #f85149;
+  --web: #a371f7;
+  --fs: 32px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+.dot.live {
+  background: var(--xoa);
+  animation: pulse 1.4s infinite;
+}
+.dot.err { background: var(--red); }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(63,185,80,.7); }
+  70% { box-shadow: 0 0 0 10px rgba(63,185,80,0); }
+  100% { box-shadow: 0 0 0 0 rgba(63,185,80,0); }
+}
+#status { font-weight: 700; font-size: 14px; }
+#meter {
+  width: 60px;
+  height: 8px;
+  border-radius: 4px;
+  background: #21262d;
+  overflow: hidden;
+  flex: none;
+}
+#meter i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--muted);
+  transition: width .08s;
+}
+#meter.speech i { background: var(--xoa); }
+#lat {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: auto;
+  font-size: 13px;
+}
+button, select, input, textarea {
+  font: inherit;
+  color: var(--text);
+  background: #21262d;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+button {
+  padding: 7px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+button:hover { border-color: var(--muted); }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+button.primary.on { background: #da3633; border-color: var(--red); }
+button.accent { background: #1f6feb; border-color: #388bfd; color: #fff; }
+
+#banner {
+  display: none;
+  background: var(--red);
+  color: #fff;
+  font-weight: 800;
+  font-size: calc(var(--fs) * .65);
+  padding: 12px 16px;
+  align-items: center;
+  gap: 12px;
+}
+#banner.show { display: flex; }
+#banner button {
+  background: rgba(0,0,0,.25);
+  border-color: rgba(255,255,255,.6);
+  color: #fff;
+  margin-left: auto;
+  font-size: 14px;
+}
+main {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  min-height: 0;
+}
+.line {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--panel);
+  border-left: 12px solid var(--muted);
+  border-radius: 14px;
+  padding: 22px 26px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.line.XANH { border-color: var(--xoa); }
+.line.VANG { border-color: var(--hoi); }
+.line.DO { border-color: var(--red); background: #2a1214; }
+.lvl {
+  flex: none;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 2px solid var(--muted);
+  color: var(--muted);
+  margin-top: calc(var(--fs) * .25);
+}
+.lvl.XANH { color: var(--xoa); border-color: var(--xoa); }
+.lvl.VANG { color: var(--hoi); border-color: var(--hoi); }
+.lvl.DO { color: #fff; background: var(--red); border-color: var(--red); }
+#fSay {
+  margin: 0;
+  font-size: var(--fs);
+  line-height: 1.45;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+main.stale #fSay { opacity: .45; }
+#sub {
+  color: var(--muted);
+  font-size: 15px;
+  min-height: 1.4em;
+  padding-left: 4px;
+  font-style: italic;
+}
+#errBox {
+  display: none;
+  background: #3d1214;
+  border: 1px solid var(--red);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+#errBox.show { display: block; }
+#chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#chips button {
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-align: left;
+}
+#chips button.k { border-color: var(--hoi); color: #e6edf3; }
+#chips button.s { border-color: var(--xoa); color: #7ee787; }
+
+footer {
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#khIn {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 12px;
+  font-size: 15px;
+}
+#kNote {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+#transcript {
+  max-height: 13vh;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+#transcript div b { color: var(--text); }
+#transcript div.BS b { color: var(--chot); }
+#talk {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+#talk.on {
+  background: var(--chot);
+  border-color: var(--chot);
+  color: #000;
+}
+.hint { font-size: 12px; color: var(--muted); }
+#quickAudio { display: none; }
+
+#side {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(480px, 94vw);
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.45;
+  overflow: auto;
+  transform: translateX(105%);
+  transition: transform .2s ease-in-out;
+  z-index: 30;
+  box-shadow: -10px 0 30px rgba(0,0,0,.5);
+}
+#side.open { transform: none; }
+#side h3 {
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: var(--muted);
+  margin: 16px 0 6px;
+}
+.pre { white-space: pre-wrap; font-size: 14px; line-height: 1.5; }
+dialog {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: min(880px, 94vw);
+  max-height: 92vh;
+  padding: 0;
+}
+dialog::backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(2px); }
+dialog form { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+dialog label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+dialog input, dialog select, dialog textarea { padding: 8px 10px; color: var(--text); font-size: 15px; }
+dialog textarea { min-height: 70px; line-height: 1.45; resize: vertical; }
+.title { font-size: 18px; font-weight: 800; }
+.dstatus { font-size: 14px; color: var(--hoi); min-height: 1.2em; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.grid4 { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; }
+#diagList div { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+
+@media (max-width: 640px) {
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  :root { --fs: 25px; }
+  .line { flex-direction: column; gap: 8px; padding: 16px; }
+  header { gap: 6px; padding: 8px 10px; }
+  header button { padding: 6px 8px; font-size: 13px; }
+  #fsDown, #fsUp, #lat { display: none; }
+  main { padding: 14px; justify-content: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span id="dot" class="dot"></span>
+  <span id="status">Chưa bật</span>
+  <span id="meter" title="Mức âm micro"><i></i></span>
+  <span id="lat"></span>
+  
+  <button id="btnCase">📋 Dán case</button>
+  <button id="btnStart" class="primary" title="Bật/Tắt AI tự nghe qua Micro">▶ Micro (Nghe)</button>
+  
+  <input type="file" id="quickAudio" accept="audio/*,.amr,.m4a,.mp3,.wav,.3gp,.aac,.webm">
+  <button id="btnUploadAudio" class="accent" title="Nạp file ghi âm cuộc gọi để Whisper chép và AI gợi ý tức thì">📂 Nghe File Ghi Âm</button>
+  
+  <button id="btnEnd">🏁 Kết ca</button>
+  <button id="btnClear">Ca mới</button>
+  <button id="btnSide" title="Chiến lược, tra cứu">📑</button>
+  <button id="btnDiag" title="Kiểm tra hệ thống">🩺</button>
+  <button id="btnSet">⚙</button>
+  <button id="fsDown">A−</button><button id="fsUp">A+</button>
+</header>
+
+<div id="banner">
+  <span>⚠ DẤU HIỆU NGUY HIỂM: <span id="rfTerms"></span> → ưu tiên chỉ dẫn 115 / cấp cứu</span>
+  <button id="rfClose">Đã xử lý</button>
+</div>
+
+<main id="main">
+  <div class="line" id="line">
+    <span class="lvl" id="lvl">—</span>
+    <p id="fSay">Nạp 📋 Dán case, hoặc bấm 📂 Nghe File Ghi Âm / ▶ Micro để AI đề xuất câu nói cho bác sĩ.</p>
+  </div>
+  <div id="sub"></div>
+  <div id="chips"></div>
+  <div id="errBox"></div>
+</main>
+
+<aside id="side">
+  <div class="row">
+    <b>📑 Chi tiết ca & Tra cứu</b>
+    <span style="margin-left:auto"></span>
+    <button id="sideClose">✕</button>
+  </div>
+  <div id="brief" style="margin-top:14px"></div>
+</aside>
+
+<footer>
+  <div class="row">
+    <input id="khIn" placeholder="Khách vừa nói gì? Gõ nhanh rồi Enter..." enterkeyhint="send">
+    <button id="khSend" class="primary">Gửi AI</button>
+    <button id="talk" title="Giữ khi Bác sĩ đang nói để tránh thu nhầm giọng BS">🎙 Giữ khi BS nói</button>
+  </div>
+  <div class="row">
+    <input id="kNote" placeholder="Ghi chú nhanh lâm sàng (VD: vừa đo lại 38.2°C, bé bú bình thường)...">
+  </div>
+  <div id="transcript"></div>
+  <div class="hint">Phím tắt: Space (giữ) = Bác sĩ đang nói · Enter = Đề xuất lại · Không đọc SĐT/Họ tên thật vào mic.</div>
+</footer>
+
+<!-- ============ DÁN CASE ============ -->
+<dialog id="caseDlg">
+  <form method="dialog">
+    <div class="title">📋 Dán case oncall</div>
+    <textarea id="kPaste" style="min-height:160px" placeholder="Dán nguyên văn tin nhắn oncall / alert Teams vào đây — AI tự quét và lập chiến lược ngay..."></textarea>
+    <div class="dstatus" id="kStatus"></div>
+    <details id="kMore">
+      <summary style="cursor:pointer;color:var(--chot);font-weight:600;padding:6px 0">Chi tiết khung ca (sửa nếu cần)</summary>
+      <div class="grid3">
+        <label>Loại case<select id="kType"><option value="PUST">PUST ONCALL</option><option value="TONGDAI">TỔNG ĐÀI / THẮC MẮC</option></select></label>
+        <label>Mã KH / Số phiếu<input id="kCode"></label>
+        <label>Họ tên khách/Bé<input id="kName"></label>
+      </div>
+      <div class="grid4" style="margin-top:10px">
+        <label>Người nghe máy / xưng hô<input id="kCaller"></label>
+        <label>Tuổi / Ngày sinh<input id="kAge"></label>
+        <label>Cân nặng (kg)<input id="kWeight" inputmode="decimal"></label>
+        <label>Giới<select id="kSex"><option value="">—</option><option>Nam</option><option>Nữ</option></select></label>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <label>Vắc xin đã tiêm<input id="kVax"></label>
+        <label>Thời điểm tiêm<input id="kWhen" type="datetime-local"></label>
+      </div>
+      <label style="margin-top:10px">Vấn đề / Triệu chứng<textarea id="kIssue"></textarea></label>
+      <label style="margin-top:10px">Chiến lược SOP VNVC<textarea id="kStrategy" style="min-height:90px"></textarea></label>
+    </details>
+    <div class="row">
+      <button type="button" id="kClear">Xoá</button>
+      <span style="margin-left:auto"></span>
+      <button value="cancel">Đóng</button>
+      <button type="button" id="kSave">Lưu khung</button>
+      <button type="button" id="kAnalyze" class="primary">Phân tích lại</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ KẾT CA ============ -->
+<dialog id="endDlg">
+  <form method="dialog">
+    <div class="title">🏁 Hoàn tất case — Soạn tin nhắn Teams</div>
+    <div class="dstatus" id="eStatus"></div>
+    <label>Tin nhắn đóng case Teams (Chuẩn 01 đoạn văn duy nhất, liền mạch, không ngắt dòng):
+      <textarea id="eTeams" style="min-height:130px"></textarea>
+    </label>
+    <div class="row">
+      <button type="button" id="eCopy">📋 Copy tin nhắn</button>
+      <span style="margin-left:auto"></span>
+      <button type="button" id="eNew" class="primary">Ca mới</button>
+      <button value="close">Đóng</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ KIỂM TRA HỆ THỐNG ============ -->
+<dialog id="diagDlg">
+  <form method="dialog">
+    <div class="title">🩺 Kiểm tra hệ thống (Diagnostic)</div>
+    <div id="diagList"></div>
+    <div class="row"><span style="margin-left:auto"></span><button value="close">Đóng</button></div>
+  </form>
+</dialog>
+
+<!-- ============ CÀI ĐẶT ============ -->
+<dialog id="dlg">
+  <form method="dialog">
+    <div class="title">⚙ Cài đặt cấu hình</div>
+    <div class="grid2">
+      <label>Nhà cung cấp AI
+        <select id="sProvider">
+          <option value="groq">Groq — Miễn phí 100%, LPU siêu tốc (Khuyên dùng)</option>
+          <option value="gemini">Google Gemini</option>
+        </select>
+      </label>
+      <label><span id="sKeyLbl">API key (Groq hoặc Gemini)</span><input id="sKey" type="password" autocomplete="off" placeholder="Dán API key vào đây"></label>
+    </div>
+    <div class="hint" id="sKeyHint" style="margin-top:-4px">Lấy key Groq miễn phí tại console.groq.com/keys (không cần thẻ ngân hàng).</div>
+    <div class="grid2" style="margin-top:10px">
+      <label>Model nhắc thoại chính (Streaming thời gian thực)
+        <select id="sModel">
+          <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Mạnh nhất, siêu tốc)</option>
+          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Phản xạ cực nhanh)</option>
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (MoE reasoning)</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash (Google)</option>
+        </select>
+      </label>
+      <label>Model phân tích case / kết ca
+        <select id="sRModel">
+          <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid3" style="margin-top:10px">
+      <label>Tên bác sĩ<input id="sName" value="Bác sĩ"></label>
+      <label>Bác sĩ xưng<input id="sSelf" value="em"></label>
+      <label>Gọi khách là<input id="sAddr" value="anh/chị"></label>
+    </div>
+    <label style="margin-top:10px">System Prompt SOP VNVC<textarea id="sPrompt" style="min-height:140px"></textarea></label>
+    <div class="row">
+      <button type="button" id="sReset">Khôi phục prompt gốc</button>
+      <span style="margin-left:auto"></span>
+      <button value="cancel">Huỷ</button>
+      <button value="save" class="primary">Lưu</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* =====================================================================
+   PROMPTS THỰC CHIẾN VNVC
+   ===================================================================== */
+const DEFAULT_PROMPT = `Bạn là TRỢ LÝ NHẮC THOẠI LÂM SÀNG cho BÁC SĨ trực Oncall PUST / Tổng đài tại hệ thống tiêm chủng VNVC. Bạn KHÔNG nói chuyện trực tiếp với khách; mỗi lượt bạn đưa ra MỘT câu tối ưu nhất (≤35 từ) để bác sĩ đọc ngay. Bác sĩ chịu trách nhiệm chuyên môn cuối cùng.
+
+QUY TẮC SOP VNVC BẮT BUỘC:
+1. Thuốc: Chỉ hướng dẫn Paracetamol khi sốt ≥38,5°C hoặc đau nhiều (trẻ: 10–15 mg/kg/lần; người lớn: 500 mg/lần, cách 4–6 giờ). Tuyệt đối không kê thuốc khác qua điện thoại.
+2. Bệnh trùng lặp (TCM, viêm hô hấp, tiêu hóa): Vắc xin bất hoạt không chứa virus sống nên không thể gây nhiễm bệnh. Giải thích là trùng lặp thời gian ủ bệnh tự nhiên trong cộng đồng.
+3. Khoảng cách tối thiểu: Chỉ được tiêm sớm tối đa ≤2 ngày (sớm ≥3 ngày: CHƯA ĐỦ ĐIỀU KIỆN TIÊM). Vắc xin sống dạng tiêm khác ngày cách ≥28 ngày. Qdenga không tiêm cùng ngày với vắc xin sống khác.
+4. Tiền sử mắc bệnh tự nhiên (sởi, thủy đậu) không tự quy đổi thành liều vắc xin.
+
+PHÂN TẦNG (MUC):
+- DO: Cấp cứu ngay (khó thở, tím tái, thở rít, co giật, li bì, mề đay choáng, nôn liên tục mọi thứ, giật mình chới với nghi TCM độ 2+).
+- VANG: Mời khám trực tiếp trong ngày (trẻ <3 tháng sốt ≥38°C; sốt >48h; mụn nước loét miệng; sưng đỏ lan rộng cả chi có mủ).
+- XANH: Theo dõi tại nhà (phản ứng tại chỗ thông thường, sốt nhẹ-vừa <48h sau tiêm bất hoạt, sốt/phát ban sau 5-12 ngày tiêm Priorix/MMR).
+
+ĐỊNH DẠNG BẮT BUỘC (đúng 2 dòng, không markdown):
+MUC: XANH | VANG | DO
+NOI: [MỘT câu duy nhất, ≤35 từ, không xuống dòng để bác sĩ đọc ngay]`;
+
+const CASE_TASK = `=== NHẬN DIỆN CASE & LẬP CHIẾN LƯỢC ===
+Đọc TIN NHẮN CASE Teams và tự nhận diện toàn bộ thông tin, lập chiến lược SOP VNVC.
+Chỉ trả về JSON hợp lệ:
+{"loai_case":"PUST hoặc TONGDAI",
+"nguoi_nghe_may":"mẹ bé/ba bé...",
+"tuoi":"tuổi hoặc ngày sinh",
+"can_nang":"",
+"gioi":"",
+"vac_xin":"tên vắc xin và mũi",
+"thoi_diem_tiem":"",
+"van_de":"triệu chứng/thắc mắc chính",
+"chien_luoc":"Chiến lược ứng phó theo SOP VNVC",
+"tom_tat":"1-2 câu tóm tắt",
+"muc_du_kien":"XANH|VANG|DO",
+"mo_dau":"Câu mở đầu chào xưng danh bác sĩ VNVC",
+"cau_hoi":["3-4 câu hỏi loại trừ cờ đỏ"],
+"nhanh":[{"neu":"khách nói...","thi":"bác sĩ nói..."}],
+"ket_thuc":"câu dặn dò kết thúc"}`;
+
+const CLOSE_TASK = `=== TỔNG KẾT CA & SOẠN BÁO CÁO TEAMS ===
+Dựa trên KHUNG CA và HỘI THOẠI thực tế (hoặc ghi âm).
+QUY TẮC BÁO CÁO TEAMS:
+- Bắt buộc viết ĐÚNG 01 ĐOẠN VĂN DUY NHẤT, LIỀN MẠCH, TUYỆT ĐỐI KHÔNG XUỐNG DÒNG.
+- Cấu trúc: Bác sĩ đã liên hệ KH/mẹ bé: [HỌ TÊN] ([Tuổi/Ngày sinh]). Hiện tại [mô tả ngắn tình trạng/thắc mắc]. Giải thích rõ [cơ chế lành tính / bệnh lý trùng lặp / kết luận đủ hay chưa đủ điều kiện tiêm theo SOP]. Hướng dẫn [chăm sóc theo dõi tại nhà, dùng Paracetamol nếu sốt đau / dời lịch tiêm]; dặn dò kỹ các dấu hiệu cảnh báo [liệt kê triệu chứng] cần đến CSYT ngay. Khách hàng đã hiểu, an tâm và đồng ý hướng xử trí. [CÂU KẾT: Ca PUST kết bằng "Xin phép đóng case." | Ca TỔNG ĐÀI kết bằng "Nhờ TĐ hỗ trợ đóng case giúp ạ."]
+
+Chỉ trả về JSON:
+{"tom_tat":"tóm tắt ngắn",
+"muc":"XANH|VANG|DO",
+"xu_tri":"đã tư vấn gì",
+"dan_do":"dấu hiệu đã dặn",
+"hen":"không",
+"tin_nhan_teams":"Nội dung 01 đoạn văn duy nhất chuẩn như trên"}`;
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('pust_'+k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('pust_'+k, v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem('pust_'+k); }catch(e){} }
+};
+
+let cfg = {
+  provider: store.get('provider', 'groq'),
+  key: store.get('key', ''),
+  model: store.get('model', 'llama-3.3-70b-versatile'),
+  rmodel: store.get('rmodel', 'llama-3.3-70b-versatile'),
+  name: store.get('name', 'Bác sĩ'),
+  self: store.get('self', 'em'),
+  addr: store.get('addr', 'anh/chị'),
+  prompt: store.get('prompt_v9', DEFAULT_PROMPT)
+};
+
+const GROQ_URL = 'https://api.groq.com/openai/v1';
+const GEM_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
+const isGroq = () => cfg.provider === 'groq';
+
+let fs = +store.get('fs','32');
+document.documentElement.style.setProperty('--fs', fs+'px');
+
+const FRAME_IDS = ['kType','kCode','kName','kPaste','kCaller','kAge','kWeight','kSex','kVax','kWhen','kIssue','kStrategy'];
+let frame = parseJSON(store.get('frame','{}')) || {};
+let brief = parseJSON(store.get('brief','null'));
+
+let running = false, bsSpeaking = false;
+let turns = [];
+let pendingTimer = null, controller = null, reqSeq = 0;
+const A = { stream: null, ctx: null, proc: null, level: 0 };
+
+function parseJSON(t){
+  if(t == null) return null;
+  try{ return JSON.parse(t); }catch(_){}
+  const s = String(t).replace(/```(?:json)?/gi, ''), a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if(a < 0 || b <= a) return null;
+  try{ return JSON.parse(s.slice(a, b + 1)); }catch(_){ return null; }
+}
+function setStatus(txt, cls){ $('status').textContent = txt; $('dot').className = 'dot ' + (cls||''); }
+function setLat(t){ $('lat').textContent = t; }
+function noAccent(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D'); }
+function level(s){ const v = noAccent(s||'').toUpperCase(); return v.includes('XANH') ? 'XANH' : v.includes('VANG') ? 'VANG' : /\bDO\b/.test(v) ? 'DO' : ''; }
+const LV = { XANH:'XANH', VANG:'VÀNG', DO:'ĐỎ' };
+function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+function arr(x){ return Array.isArray(x) ? x.filter(Boolean) : []; }
+
+function setLine(lv, text, head){
+  if(lv !== undefined){ $('line').className = 'line ' + (lv || ''); $('lvl').className = 'lvl ' + (lv || ''); $('lvl').textContent = LV[lv] || '—'; }
+  if(text != null) $('fSay').textContent = text;
+  if(head != null) $('sub').textContent = head;
+}
+function showErr(msg){ $('errBox').textContent = msg ? '⚠ ' + msg : ''; $('errBox').classList.toggle('show', !!msg); }
+
+async function callLLM(sys, user, json){
+  if(isGroq()){
+    const payload = { model: cfg.rmodel, messages: [{ role: 'system', content: sys }, { role: 'user', content: user }], temperature: 0.2 };
+    if(json) payload.response_format = { type: 'json_object' };
+    const res = await fetch(GROQ_URL + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('Groq ' + res.status + ': ' + (await res.text()).slice(0, 300));
+    const j = await res.json();
+    return j.choices?.[0]?.message?.content || '';
+  } else {
+    const url = GEM_URL + encodeURIComponent(cfg.rmodel) + ':generateContent?key=' + encodeURIComponent(cfg.key);
+    const body = { systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 4096, temperature: 0.2 } };
+    if(json) body.generationConfig.responseMimeType = 'application/json';
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if(!res.ok) throw new Error('Gemini ' + res.status + ': ' + (await res.text()).slice(0, 300));
+    const j = await res.json();
+    return ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).map(p => p.text || '').join('');
+  }
+}
+
+async function* streamLLM(sys, user, signal){
+  if(isGroq()){
+    const res = await fetch(GROQ_URL + '/chat/completions', {
+      method: 'POST', signal,
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role: 'system', content: sys }, { role: 'user', content: user }], temperature: 0.2, max_tokens: 300, stream: true })
+    });
+    if(!res.ok) throw new Error('Groq ' + res.status + ': ' + (await res.text()).slice(0, 200));
+    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = '';
+    while(true){
+      const { value, done } = await reader.read(); if(done) break;
+      buf += dec.decode(value, { stream: true });
+      let i; while((i = buf.indexOf('\n')) >= 0){
+        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+        if(!line.startsWith('data:')) continue;
+        const d = line.slice(5).trim(); if(!d || d === '[DONE]') continue;
+        try{ const j = JSON.parse(d); const t = j.choices?.[0]?.delta?.content; if(t) yield t; }catch(_){}
+      }
+    }
+  } else {
+    const url = GEM_URL + encodeURIComponent(cfg.model) + ':streamGenerateContent?alt=sse&key=' + encodeURIComponent(cfg.key);
+    const body = { systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 400, temperature: 0.2 } };
+    const res = await fetch(url, { method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if(!res.ok) throw new Error('Gemini ' + res.status);
+    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = '';
+    while(true){
+      const { value, done } = await reader.read(); if(done) break;
+      buf += dec.decode(value, { stream: true });
+      let i; while((i = buf.indexOf('\n')) >= 0){
+        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+        if(!line.startsWith('data:')) continue;
+        const d = line.slice(5).trim(); if(!d || d === '[DONE]') continue;
+        try{ const j = JSON.parse(d); const t = ((j.candidates?.[0]?.content?.parts) || []).map(p => p.text || '').join(''); if(t) yield t; }catch(_){}
+      }
+    }
+  }
+}
+
+/* Transcribe audio with Groq Whisper */
+async function groqWhisper(blob, name){
+  const fd = new FormData();
+  fd.append('file', blob, name || 'audio.wav');
+  fd.append('model', 'whisper-large-v3-turbo');
+  fd.append('language', 'vi');
+  fd.append('response_format', 'text');
+  fd.append('prompt', 'Tư vấn tiêm chủng VNVC. Vắc xin, bác sĩ, khách hàng, sốt, phát ban, quấy khóc, li bì, mụn nước, Hexaxim, Infanrix, Prevenar, Qdenga.');
+  const res = await fetch(GROQ_URL + '/audio/transcriptions', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + cfg.key },
+    body: fd
+  });
+  if(!res.ok) throw new Error('Whisper: ' + (await res.text()).slice(0, 200));
+  return (await res.text()).trim();
+}
+
+$('btnUploadAudio').onclick = () => $('quickAudio').click();
+
+$('quickAudio').onchange = async () => {
+  const file = $('quickAudio').files[0];
+  if(!file) return;
+  if(!cfg.key){ openSettings(); return; }
+  
+  setStatus('Đang nghe file ghi âm…', 'live');
+  setLine('VANG', 'Đang giải mã và chép lời file: ' + file.name + '…', 'AI đang nghe...');
+  
+  try {
+    let transcriptText = '';
+    if(isGroq()){
+      transcriptText = await groqWhisper(file, file.name);
+    } else {
+      const reader = new FileReader();
+      const b64 = await new Promise((res, rej) => { reader.onload = () => res(reader.result.split(',')[1]); reader.onerror = rej; reader.readAsDataURL(file); });
+      const mime = file.type || 'audio/mp3';
+      const body = {
+        systemInstruction: { parts: [{ text: cfg.prompt }] },
+        contents: [{ role: 'user', parts: [
+          { text: 'Chép lại lời khách nói và đưa ra câu gợi ý tốt nhất cho Bác sĩ (MUC và NOI).' },
+          { inlineData: { mimeType: mime, data: b64 } }
+        ]}]
+      };
+      const res = await fetch(GEM_URL + encodeURIComponent(cfg.model) + ':generateContent?key=' + encodeURIComponent(cfg.key), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+      const j = await res.json();
+      const out = ((j.candidates?.[0]?.content?.parts) || []).map(p => p.text || '').join('');
+      renderSay(out);
+      setStatus('Đã phân tích xong ghi âm', '');
+      return;
+    }
+    
+    if(transcriptText){
+      turns.push({ who: 'KH', text: transcriptText, t: Date.now() });
+      renderTranscript();
+      $('sub').textContent = 'Đã nghe được: "' + transcriptText.slice(0, 70) + '..."';
+      suggest();
+      setStatus('Đã chép lời giọng nói', '');
+    } else {
+      showErr('Không nhận diện được giọng nói trong file ghi âm.');
+    }
+  } catch(e) {
+    showErr('Lỗi đọc ghi âm: ' + e.message);
+    setStatus('Lỗi file ghi âm', 'err');
+  } finally {
+    $('quickAudio').value = '';
+  }
+};
+
+function renderTranscript(){
+  const box = $('transcript'); box.innerHTML = '';
+  turns.filter(t => t.who !== 'AI').slice(-8).forEach(t => {
+    const d = el('div', t.who); d.appendChild(el('b', null, t.who + ': ')); d.appendChild(document.createTextNode(t.text)); box.appendChild(d);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function buildUserPrompt(){
+  let s = '';
+  if(frame.kVax || frame.kIssue) s += 'KHUNG CA: Bé/KH ' + (frame.kName || '') + ' (' + (frame.kAge || '') + '), Tiêm: ' + (frame.kVax || '') + ', Vấn đề: ' + (frame.kIssue || '') + '\n';
+  if(brief && brief.chien_luoc) s += 'CHIẾN LƯỢC SOP: ' + brief.chien_luoc + '\n';
+  if($('kNote').value.trim()) s += 'GHI CHÚ BS: ' + $('kNote').value.trim() + '\n';
+  const conv = turns.filter(t => t.who !== 'AI').slice(-10).map(t => t.who + ': ' + t.text).join('\n');
+  s += 'HỘI THOẠI THỰC TẾ:\n' + (conv || '(trống)') + '\n';
+  s += 'Đưa ra MỘT câu duy nhất (≤35 từ) cho Bác sĩ đọc tiếp theo.';
+  return s;
+}
+
+function renderSay(acc){
+  const m = acc.match(/^\s*\**MUC\**\s*:\s*(.*)$/mi);
+  const n = acc.match(/^\s*\**NOI\**\s*:\s*(.*)$/mi);
+  if(m) setLine(level(m[1].trim()));
+  if(n) $('fSay').textContent = n[1].replace(/[\r\n]+/g, ' ').trim();
+  else if(!acc.includes('MUC:')) $('fSay').textContent = acc.replace(/[\r\n]+/g, ' ').trim();
+}
+
+async function suggest(){
+  clearTimeout(pendingTimer);
+  if(!cfg.key){ openSettings(); return; }
+  if(controller) controller.abort();
+  controller = new AbortController();
+  
+  const my = ++reqSeq, t0 = performance.now();
+  $('main').classList.add('stale');
+  let acc = '', first = true;
+  
+  try {
+    for await (const chunk of streamLLM(cfg.prompt, buildUserPrompt(), controller.signal)){
+      if(my !== reqSeq) return;
+      acc += chunk;
+      if(first && acc.includes('NOI:')){
+        first = false; $('main').classList.remove('stale');
+        setLat('Thời gian thực: ' + Math.round(performance.now() - t0) + ' ms');
+      }
+      renderSay(acc);
+    }
+    if(my === reqSeq){
+      $('main').classList.remove('stale');
+      if(acc.trim()) turns.push({ who: 'AI', text: acc.trim(), t: Date.now() });
+    }
+  } catch(e) {
+    if(e.name === 'AbortError') return;
+    $('main').classList.remove('stale');
+    showErr('Lỗi phản hồi: ' + e.message);
+  }
+}
+
+async function openMic(){
+  if(A.stream && A.stream.active) return true;
+  try {
+    A.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const AC = window.AudioContext || window.webkitAudioContext;
+    A.ctx = new AC();
+    const src = A.ctx.createMediaStreamSource(A.stream);
+    A.proc = A.ctx.createScriptProcessor(2048, 1, 1);
+    src.connect(A.proc);
+    A.proc.connect(A.ctx.destination);
+    A.proc.onaudioprocess = e => {
+      const x = e.inputBuffer.getChannelData(0);
+      let s = 0; for(let i=0; i<x.length; i++) s += x[i]*x[i];
+      A.level = Math.sqrt(s/x.length);
+      $('meter').firstChild.style.width = Math.min(100, A.level * 350) + '%';
+    };
+    return true;
+  } catch(e) {
+    showErr('Không mở được micro: ' + e.message + '\n(Hãy chắc chắn trang đang chạy trên link https://)');
+    return false;
+  }
+}
+
+let webRecog = null;
+function getWebRecog(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return null;
+  const r = new SR();
+  r.lang = 'vi-VN'; r.continuous = true; r.interimResults = true;
+  r.onresult = e => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const res = e.results[i], txt = res[0].transcript.trim();
+      if(res.isFinal){
+        if(txt){
+          const who = bsSpeaking ? 'BS' : 'KH';
+          turns.push({ who, text: txt, t: Date.now() });
+          renderTranscript();
+          if(who === 'KH'){
+            clearTimeout(pendingTimer);
+            pendingTimer = setTimeout(suggest, 650);
+          }
+        }
+      } else interim += txt + ' ';
+    }
+    $('sub').textContent = interim ? ((bsSpeaking ? '🎙 BS: ' : '👂 KH: ') + interim) : '';
+  };
+  r.onend = () => { if(running) try{ r.start(); }catch(_){} };
+  return r;
+}
+
+async function toggleMic(){
+  if(running){
+    running = false;
+    if(webRecog) try{ webRecog.stop(); }catch(_){}
+    setStatus('Đã dừng micro', '');
+    $('btnStart').classList.remove('on');
+    $('btnStart').textContent = '▶ Micro (Nghe)';
+  } else {
+    if(!cfg.key){ openSettings(); return; }
+    const ok = await openMic();
+    if(!ok) return;
+    if(!webRecog) webRecog = getWebRecog();
+    if(webRecog) try{ webRecog.start(); }catch(_){}
+    running = true;
+    setStatus('Đang nghe trực tiếp…', 'live');
+    $('btnStart').classList.add('on');
+    $('btnStart').textContent = '■ Dừng Micro';
+  }
+}
+$('btnStart').onclick = toggleMic;
+
+/* Quick text entry */
+function sendKH(){
+  const t = $('khIn').value.trim();
+  if(!t) return;
+  $('khIn').value = '';
+  turns.push({ who: 'KH', text: t, t: Date.now() });
+  renderTranscript();
+  suggest();
+}
+$('khSend').onclick = sendKH;
+$('khIn').onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); sendKH(); } };
+
+/* BS push to talk */
+$('talk').addEventListener('pointerdown', e => { e.preventDefault(); bsSpeaking = true; $('talk').classList.add('on'); });
+['pointerup','pointerleave','pointercancel'].forEach(ev => $('talk').addEventListener(ev, () => { bsSpeaking = false; $('talk').classList.remove('on'); }));
+
+function openCase(){
+  FRAME_IDS.forEach(id => $(id).value = frame[id] || (id==='kType'?'PUST':''));
+  $('caseDlg').showModal();
+}
+$('btnCase').onclick = openCase;
+
+$('kClear').onclick = () => { FRAME_IDS.forEach(id => $(id).value = ''); };
+$('kSave').onclick = () => {
+  FRAME_IDS.forEach(id => frame[id] = $(id).value.trim());
+  store.set('frame', JSON.stringify(frame));
+  $('caseDlg').close();
+  renderBrief();
+};
+
+$('kAnalyze').onclick = async () => {
+  const raw = $('kPaste').value.trim();
+  if(!raw){ $('kStatus').textContent = 'Dán tin nhắn Teams vào ô trên.'; return; }
+  $('kStatus').textContent = 'AI đang quét thông tin và lập chiến lược SOP VNVC…';
+  try {
+    const out = parseJSON(await callLLM(cfg.prompt + '\n\n' + CASE_TASK, 'TIN NHẮN ALERT TEAMS:\n' + raw, true));
+    if(out){
+      brief = out;
+      store.set('brief', JSON.stringify(brief));
+      if(out.loai_case) $('kType').value = out.loai_case;
+      if(out.tuoi) $('kAge').value = out.tuoi;
+      if(out.vac_xin) $('kVax').value = out.vac_xin;
+      if(out.van_de) $('kIssue').value = out.van_de;
+      if(out.chien_luoc) $('kStrategy').value = out.chien_luoc;
+      FRAME_IDS.forEach(id => frame[id] = $(id).value.trim());
+      store.set('frame', JSON.stringify(frame));
+      renderBrief();
+      setLine(level(out.muc_du_kien), out.mo_dau, 'Đã chuẩn bị ca trực: ' + (out.loai_case || 'PUST'));
+      $('kStatus').textContent = '✓ Nhận diện thành công!';
+      setTimeout(() => $('caseDlg').close(), 1000);
+    }
+  } catch(e) {
+    $('kStatus').textContent = 'Lỗi: ' + e.message;
+  }
+};
+
+function renderBrief(){
+  const box = $('brief'); box.innerHTML = '';
+  if(!brief) return;
+  box.appendChild(el('h3', null, 'TÓM TẮT & CHIẾN LƯỢC'));
+  box.appendChild(el('div', null, brief.tom_tat || ''));
+  box.appendChild(el('div', 'pre', brief.chien_luoc || ''));
+  renderChips();
+}
+
+function renderChips(){
+  const box = $('chips'); box.innerHTML = '';
+  if(!brief) return;
+  const add = (txt, cls, fn) => { const b = el('button', cls, txt); b.onclick = fn; box.appendChild(b); };
+  if(brief.mo_dau) add('▶ Mở đầu', 's', () => { setLine('XANH', brief.mo_dau); turns.push({ who:'AI', text: brief.mo_dau, t:Date.now() }); });
+  (brief.cau_hoi || []).forEach(q => add('❓ ' + q, 'k', () => { setLine('VANG', q); turns.push({ who:'AI', text: q, t:Date.now() }); }));
+  (brief.nhanh || []).forEach(n => add('💬 ' + n.neu, 'k', () => { setLine('XANH', n.thi); turns.push({ who:'AI', text: n.thi, t:Date.now() }); }));
+  if(brief.ket_thuc) add('✅ Chốt cuộc gọi', 's', () => { setLine('XANH', brief.ket_thuc); turns.push({ who:'AI', text: brief.ket_thuc, t:Date.now() }); });
+}
+
+async function endCall(){
+  if(running) toggleMic();
+  $('eTeams').value = '';
+  $('endDlg').showModal();
+  $('eStatus').textContent = 'AI đang tổng kết báo cáo đóng case chuẩn 01 đoạn văn…';
+  
+  const conv = turns.filter(t => t.who !== 'AI').map(t => t.who + ': ' + t.text).join('\n');
+  const user = 'KHUNG CA: ' + JSON.stringify(frame) + '\nHỘI THOẠI THỰC TẾ:\n' + (conv || '(không có thoại, dựa trên khung ca)') + '\nBác sĩ: ' + cfg.name;
+  
+  try {
+    const out = parseJSON(await callLLM(cfg.prompt + '\n\n' + CLOSE_TASK, user, true));
+    if(out && out.tin_nhan_teams){
+      $('eTeams').value = out.tin_nhan_teams.replace(/[\r\n]+/g, ' ').trim();
+      $('eStatus').textContent = '✓ Đã tạo báo cáo Teams chuẩn quy chuẩn!';
+      try{ await navigator.clipboard.writeText($('eTeams').value); $('eStatus').textContent += ' (Đã tự động Copy)'; }catch(_){}
+    }
+  } catch(e) {
+    $('eStatus').textContent = 'Lỗi tạo báo cáo: ' + e.message;
+    $('eTeams').value = 'Bác sĩ đã liên hệ phụ huynh bé: ' + (frame.kName || 'KH') + '. Hiện tại đã trao đổi và hướng dẫn chăm sóc theo dõi sức khỏe theo SOP VNVC. Khách hàng đã hiểu và đồng ý hướng xử trí. ' + (frame.kType === 'TONGDAI' ? 'Nhờ TĐ hỗ trợ đóng case giúp ạ.' : 'Xin phép đóng case.');
+  }
+}
+$('btnEnd').onclick = endCall;
+
+$('eCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('eTeams').value); $('eCopy').textContent = '✓ Đã copy'; setTimeout(() => $('eCopy').textContent = '📋 Copy tin nhắn', 1500); }catch(_){}
+};
+
+function newSession(){
+  if(running) toggleMic();
+  turns = []; frame = {}; brief = null;
+  store.del('frame'); store.del('brief');
+  $('kNote').value = ''; $('khIn').value = '';
+  setLine('', 'Nạp 📋 Dán case, hoặc bấm 📂 Nghe File Ghi Âm / ▶ Micro để AI đề xuất câu nói cho bác sĩ.', '');
+  renderTranscript(); renderChips();
+  return true;
+}
+$('btnClear').onclick = () => { if(confirm('Bắt đầu ca mới?')) newSession(); };
+$('eNew').onclick = () => { newSession(); $('endDlg').close(); };
+
+function openSettings(){
+  $('sProvider').value = cfg.provider;
+  $('sKey').value = cfg.key;
+  $('sModel').value = cfg.model;
+  $('sRModel').value = cfg.rmodel;
+  $('sName').value = cfg.name;
+  $('sSelf').value = cfg.self;
+  $('sAddr').value = cfg.addr;
+  $('sPrompt').value = cfg.prompt;
+  $('dlg').showModal();
+}
+$('btnSet').onclick = openSettings;
+
+$('sProvider').onchange = () => {
+  const p = $('sProvider').value;
+  if(p === 'groq'){
+    $('sModel').value = 'llama-3.3-70b-versatile';
+    $('sRModel').value = 'llama-3.3-70b-versatile';
+    $('sKeyLbl').textContent = 'API key (Groq gsk_...)';
+    $('sKeyHint').textContent = 'Lấy key Groq miễn phí 100% tại console.groq.com/keys';
+  } else {
+    $('sModel').value = 'gemini-2.5-flash';
+    $('sRModel').value = 'gemini-2.5-flash';
+    $('sKeyLbl').textContent = 'API key (Google AI Studio)';
+    $('sKeyHint').textContent = 'Lấy key Gemini tại aistudio.google.com/apikey';
+  }
+};
+
+$('dlg').addEventListener('close', () => {
+  if($('dlg').returnValue !== 'save') return;
+  cfg.provider = $('sProvider').value;
+  cfg.key = $('sKey').value.trim();
+  cfg.model = $('sModel').value.trim();
+  cfg.rmodel = $('sRModel').value.trim();
+  cfg.name = $('sName').value.trim();
+  cfg.self = $('sSelf').value.trim();
+  cfg.addr = $('sAddr').value.trim();
+  cfg.prompt = $('sPrompt').value.trim() || DEFAULT_PROMPT;
+  ['provider','key','model','rmodel','name','self','addr'].forEach(k => store.set(k, cfg[k]));
+  store.set('prompt_v9', cfg.prompt);
+  setStatus('Đã lưu cấu hình (' + cfg.provider.toUpperCase() + ')', '');
+});
+
+$('btnDiag').onclick = async () => {
+  const box = $('diagList'); box.innerHTML = '';
+  $('diagDlg').showModal();
+  const add = (ok, txt) => box.appendChild(el('div', null, (ok ? '✅ ' : '❌ ') + txt));
+  add(window.isSecureContext, 'Bảo mật HTTPS: ' + (window.isSecureContext ? 'OK (Cho phép mở Micro)' : 'Chưa có HTTPS (Cần chạy qua link GitHub Pages)'));
+  add(!!cfg.key, 'API Key: ' + (cfg.key ? 'Đã nhập (' + cfg.provider.toUpperCase() + ')' : 'Chưa có key — bấm ⚙ để nhập'));
+  const t0 = performance.now();
+  try {
+    const res = await callLLM('Chỉ trả lời đúng 1 chữ.', 'Nói: OK', false);
+    add(res.includes('OK') || res.length > 0, 'Phản hồi máy chủ AI ' + cfg.model + ': Siêu tốc (' + Math.round(performance.now() - t0) + ' ms)');
+  } catch(e) {
+    add(false, 'Kết nối AI lỗi: ' + e.message);
+  }
+};
+
+$('btnSide').onclick = () => $('side').classList.toggle('open');
+$('sideClose').onclick = () => $('side').classList.remove('open');
+$('fsUp').onclick = () => { fs = Math.min(50, fs + 2); document.documentElement.style.setProperty('--fs', fs+'px'); store.set('fs', fs); };
+$('fsDown').onclick = () => { fs = Math.max(18, fs - 2); document.documentElement.style.setProperty('--fs', fs+'px'); store.set('fs', fs); };
+
+renderBrief();
+if(!cfg.key) setStatus('Bấm ⚙ để nhập API key Groq', 'err');
+</script>
+</body>
+</html>
